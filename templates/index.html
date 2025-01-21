@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sentimatrix Studio</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        background-color: #f5f5f5;
+        text-align: center;
+      }
+
+      .title {
+        font-size: 2rem;
+        font-weight: bold;
+        color: #333333;
+        margin-bottom: 15px;
+      }
+
+      .subtitle {
+        font-size: 1rem;
+        color: #555555;
+        margin-bottom: 30px;
+      }
+
+      .buttons {
+        margin-bottom: 20px;
+      }
+
+      .buttons button {
+        font-size: 1rem;
+        padding: 10px 20px;
+        margin: 10px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+      }
+
+      .buttons button:hover {
+        background-color: #0056b3;
+      }
+
+      .images img {
+        max-width: 45%;
+        margin: 10px;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="title">SENTIMATRIX STUDIO</div>
+    <div class="subtitle">
+      A versatile platform for sentiment analysis and web scraping, enabling
+      users to analyze and visualize sentiments from text, audio, and images
+      with local and remote model integration.
+    </div>
+    <div class="buttons">
+      <a href="{{ url_for('render_individual_signup') }}"
+        ><button>Individual Login</button></a
+      >
+      <a href="{{ url_for('render_organisation_signup') }}"
+        ><button>Company Login</button></a
+      >
+    </div>
+    <div class="images">
+      <img src="{{ url_for('static', filename='image.jpg') }}" alt="Image 1" />
+      <img src="{{ url_for('static', filename='image.jpg') }}" alt="Image 2" />
+    </div>
+  </body>
+</html>
