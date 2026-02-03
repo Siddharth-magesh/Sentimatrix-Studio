@@ -4,76 +4,103 @@ Sentimatrix Studio is a no-code web platform for sentiment analysis and social m
 
 ## Documentation Structure
 
-```
-docs/
-├── README.md                    # This file
-├── architecture/                # System architecture and design
-│   ├── overview.md             # High-level architecture
-│   ├── components.md           # Component breakdown
-│   ├── data-flow.md            # Data flow diagrams
-│   └── security.md             # Security architecture
-├── api/                        # Backend API documentation
-│   ├── overview.md             # API design principles
-│   ├── authentication.md       # Auth endpoints
-│   ├── users.md                # User management
-│   ├── projects.md             # Project endpoints
-│   ├── scrapers.md             # Scraper configuration
-│   ├── analysis.md             # Analysis endpoints
-│   └── webhooks.md             # Webhook integrations
-├── frontend/                   # Frontend documentation
-│   ├── overview.md             # Frontend architecture
-│   ├── components.md           # UI components
-│   ├── pages.md                # Page structure
-│   ├── state-management.md     # State management
-│   └── styling.md              # Design system
-├── database/                   # Database documentation
-│   ├── schema.md               # MongoDB schema design
-│   ├── collections.md          # Collection definitions
-│   ├── indexes.md              # Index strategies
-│   └── migrations.md           # Data migrations
-├── deployment/                 # Deployment documentation
-│   ├── local.md                # Local development
-│   ├── docker.md               # Docker deployment
-│   ├── production.md           # Production deployment
-│   └── monitoring.md           # Monitoring and logging
-├── guides/                     # User and developer guides
-│   ├── quickstart.md           # Getting started
-│   ├── configuration.md        # Configuration guide
-│   ├── presets.md              # Configuration presets
-│   └── troubleshooting.md      # Common issues
-└── tasks/                      # Task tracking
-    ├── overview.md             # Project status
-    ├── backend.md              # Backend tasks
-    ├── frontend.md             # Frontend tasks
-    ├── database.md             # Database tasks
-    ├── testing.md              # Testing tasks
-    ├── deployment.md           # Deployment tasks
-    └── documentation.md        # Documentation tasks
-```
+### User Guide
+
+For end users of Sentimatrix Studio:
+
+| Document | Description |
+|----------|-------------|
+| [Getting Started](./user-guide/getting-started.md) | Quick start guide for new users |
+| [Managing Projects](./user-guide/projects.md) | Project configuration and management |
+| [LLM Configuration](./user-guide/llm-configuration.md) | Setting up AI providers |
+| [Scheduling](./user-guide/scheduling.md) | Automated scrape jobs |
+| [Webhooks](./user-guide/webhooks.md) | Real-time notifications |
+| [Analytics](./user-guide/analytics.md) | Understanding your data |
+| [FAQ](./user-guide/faq.md) | Frequently asked questions |
+
+### Developer Guide
+
+For developers building with or contributing to Sentimatrix Studio:
+
+| Document | Description |
+|----------|-------------|
+| [Getting Started](./developer-guide/getting-started.md) | Development environment setup |
+| [Architecture](./developer-guide/architecture.md) | System architecture overview |
+| [API Development](./developer-guide/api-development.md) | Building API endpoints |
+| [Testing](./developer-guide/testing.md) | Testing strategies and tools |
+| [Deployment](./developer-guide/deployment.md) | Production deployment guide |
+
+### API Reference
+
+Complete REST API documentation:
+
+| Document | Description |
+|----------|-------------|
+| [Overview](./api-reference/overview.md) | API introduction and basics |
+| [Authentication](./api-reference/authentication.md) | Auth endpoints and tokens |
+| [Projects](./api-reference/projects.md) | Project management API |
+| [Targets](./api-reference/targets.md) | Target (URL) management API |
+| [Jobs](./api-reference/jobs.md) | Scrape job management API |
+| [Results](./api-reference/results.md) | Results and analytics API |
+| [Schedules](./api-reference/schedules.md) | Automated scheduling API |
+| [Webhooks](./api-reference/webhooks.md) | Webhook configuration API |
+| [Settings](./api-reference/settings.md) | API keys, providers, presets |
+| [Billing](./api-reference/billing.md) | Subscription and usage API |
+
+### Technical Documentation
+
+Detailed technical documentation:
+
+| Directory | Description |
+|-----------|-------------|
+| [architecture/](./architecture/) | System architecture and design |
+| [api/](./api/) | Backend API specifications |
+| [frontend/](./frontend/) | Frontend architecture |
+| [database/](./database/) | Database schema and indexes |
+| [deployment/](./deployment/) | Deployment configurations |
 
 ## Quick Links
 
-- [Architecture Overview](architecture/overview.md)
-- [API Documentation](api/overview.md)
-- [Frontend Guide](frontend/overview.md)
-- [Database Schema](database/schema.md)
-- [Deployment Guide](deployment/local.md)
-- [Task Tracking](tasks/overview.md)
+### For Users
+
+| Task | Documentation |
+|------|--------------|
+| Create first project | [Getting Started](./user-guide/getting-started.md#create-your-first-project) |
+| Configure LLM provider | [LLM Configuration](./user-guide/llm-configuration.md) |
+| Set up scheduled scrapes | [Scheduling](./user-guide/scheduling.md) |
+| Export results | [Analytics](./user-guide/analytics.md#exporting-data) |
+
+### For Developers
+
+| Task | Documentation |
+|------|--------------|
+| Set up dev environment | [Developer Getting Started](./developer-guide/getting-started.md) |
+| Understand architecture | [Architecture Overview](./developer-guide/architecture.md) |
+| Write tests | [Testing Guide](./developer-guide/testing.md) |
+| Deploy to production | [Deployment Guide](./developer-guide/deployment.md) |
 
 ## Technology Stack
 
 | Layer | Technology |
 |-------|------------|
-| Backend | FastAPI (Python 3.10+) |
+| Backend | FastAPI (Python 3.11+) |
 | Frontend | Next.js 14 (React, TypeScript) |
 | Database | MongoDB |
+| Cache | Redis |
 | Authentication | JWT + OAuth2 |
 | Core Library | Sentimatrix |
 | Styling | Tailwind CSS |
-| State | Zustand |
+| State | Zustand + React Query |
 | Charts | Recharts |
+| Testing | pytest, Jest, Playwright |
+
+## Getting Help
+
+- **Email Support**: support@sentimatrix.io
+- **Community Forum**: forum.sentimatrix.io
+- **GitHub Issues**: github.com/sentimatrix/studio/issues
 
 ## Version
 
 - Documentation Version: 1.0.0
-- Target Release: v0.1.0
+- Release: v1.0.0

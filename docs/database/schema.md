@@ -11,16 +11,22 @@ sentimatrix_studio/
 ├── users                    # User accounts
 ├── projects                 # Analysis projects
 ├── targets                  # Scraping targets
-├── scrape_jobs             # Scraping job records
-├── analysis_jobs           # Analysis job records
-├── results                 # Scraped and analyzed data
-├── api_keys                # Stored API keys (encrypted)
-├── webhooks                # Webhook configurations
-├── webhook_logs            # Webhook delivery logs
-├── presets                 # Configuration presets
-├── audit_logs              # Security audit logs
-└── sessions                # User sessions
+├── scrape_jobs              # Scraping job records
+├── results                  # Scraped and analyzed data
+├── schedules                # Scheduled job configurations
+├── api_keys                 # Stored API keys (encrypted with AES-256)
+├── webhooks                 # Webhook configurations
+├── webhook_deliveries       # Webhook delivery logs
+├── audit_logs               # Security audit logs
+└── refresh_tokens           # JWT refresh tokens
 ```
+
+## Technology Stack
+
+- **Database**: MongoDB 6.0+
+- **Driver**: Motor (async MongoDB driver for Python)
+- **ODM**: Pydantic models with custom repository pattern
+- **Encryption**: Fernet (AES-256) with PBKDF2 key derivation
 
 ## Collections
 
@@ -401,6 +407,46 @@ Encrypted API key storage.
 
 ---
 
+### schedules
+
+Scheduled job configurations.
+
+```javascript
+{
+  _id: ObjectId,
+  project_id: ObjectId,             // Reference to projects (unique)
+  user_id: ObjectId,
+
+  frequency: String,                // "hourly", "daily", "weekly", "monthly"
+  time: String,                     // "HH:MM" format
+  timezone: String,                 // IANA timezone, default "UTC"
+
+  day_of_week: Number,              // 0-6 for weekly (0=Monday)
+  day_of_month: Number,             // 1-28 for monthly
+
+  enabled: Boolean,                 // Default: true
+  next_run: Date,                   // Calculated next execution time
+  last_run: Date,
+
+  run_history: [{
+    job_id: ObjectId,
+    started_at: Date,
+    status: String,                 // "completed", "failed"
+    results_count: Number,
+  }],
+
+  created_at: Date,
+  updated_at: Date,
+}
+
+// Indexes
+{ project_id: 1 }                   // Unique
+{ user_id: 1 }
+{ enabled: 1, next_run: 1 }         // Scheduler queries
+```
+
+---
+
 ### webhooks
 
 Webhook configurations.
@@ -410,19 +456,22 @@ Webhook configurations.
   _id: ObjectId,
   user_id: ObjectId,
 
-  name: String,
-  url: String,
-  events: [String],                 // ["scrape.completed", "analysis.completed"]
-  project_ids: [ObjectId],          // Filter by projects (all if empty)
+  url: String,                      // HTTPS endpoint
+  events: [String],                 // ["job.completed", "job.failed", "results.new"]
+  label: String,                    // User-friendly name
 
-  headers: Object,                  // Custom headers
-  secret: String,                   // Signing secret
+  secret: String,                   // HMAC signing secret (optional)
+  enabled: Boolean,                 // Default: true
 
-  active: Boolean,
-  success_rate: Number,             // 0-1
+  stats: {
+    total_deliveries: Number,
+    successful_deliveries: Number,
+    failed_deliveries: Number,
+    last_delivery: Date,
+    last_status: String,            // "success", "failed"
+  },
 
-  last_triggered_at: Date,
-  consecutive_failures: Number,
+  consecutive_failures: Number,     // Auto-disable after 5 failures
 
   created_at: Date,
   updated_at: Date,
@@ -430,7 +479,51 @@ Webhook configurations.
 
 // Indexes
 { user_id: 1 }
-{ active: 1, events: 1 }
+{ enabled: 1, events: 1 }
+```
+
+---
+
+### webhook_deliveries
+
+Webhook delivery history.
+
+```javascript
+{
+  _id: ObjectId,
+  webhook_id: ObjectId,
+  user_id: ObjectId,
+
+  event: String,                    // Event type that triggered delivery
+  status: String,                   // "success", "failed", "pending"
+
+  request: {
+    url: String,
+    headers: Object,
+    body: String,                   // JSON payload
+  },
+
+  response: {
+    status_code: Number,
+    headers: Object,
+    body: String,
+    time_ms: Number,                // Response time in ms
+  },
+
+  error: String,                    // Error message if failed
+  attempts: Number,                 // Number of delivery attempts
+
+  created_at: Date,
+  delivered_at: Date,
+}
+
+// Indexes
+{ webhook_id: 1, created_at: -1 }
+{ user_id: 1 }
+{ status: 1 }
+
+// TTL index - auto-delete after 7 days
+{ created_at: 1 }, { expireAfterSeconds: 604800 }
 ```
 
 ---

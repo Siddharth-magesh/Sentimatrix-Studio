@@ -80,7 +80,8 @@ class ScrapeJobRepository(BaseRepository):
 
         result = await self.collection.insert_one(job_doc)
         job_doc["id"] = str(result.inserted_id)
-        del job_doc["_id"] if "_id" in job_doc else None
+        if "_id" in job_doc:
+            del job_doc["_id"]
 
         return ScrapeJob(**job_doc)
 

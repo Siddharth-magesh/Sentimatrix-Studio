@@ -225,25 +225,69 @@ interface Column<T> {
 
 ---
 
-### Loading
+### Skeleton
 
-Loading indicator variants.
+Loading placeholder components for content loading states.
 
 ```typescript
-interface LoadingProps {
-  variant?: 'spinner' | 'skeleton' | 'dots';
+interface SkeletonProps {
+  className?: string;
+  variant?: 'default' | 'circular' | 'text';
+  width?: string | number;
+  height?: string | number;
+}
+```
+
+**Pre-built Skeletons:**
+
+```tsx
+// Card skeleton
+<SkeletonCard />
+
+// Table skeleton
+<SkeletonTable rows={5} columns={4} />
+
+// Stats skeleton
+<SkeletonStats count={4} />
+
+// Chart skeleton
+<SkeletonChart height={300} />
+
+// Form skeleton
+<SkeletonForm fields={5} />
+
+// List skeleton
+<SkeletonList items={5} />
+```
+
+---
+
+### Spinner
+
+Loading spinner with various sizes.
+
+```typescript
+interface SpinnerProps {
   size?: 'sm' | 'md' | 'lg';
-  text?: string;
+  className?: string;
 }
 ```
 
 **Usage:**
 
 ```tsx
-<Loading variant="spinner" size="md" text="Loading projects..." />
+<Spinner size="md" />
 
-// Skeleton for table
-<Loading.Skeleton rows={5} columns={4} />
+// Loading overlay for containers
+<LoadingOverlay isLoading={loading} text="Processing...">
+  <Content />
+</LoadingOverlay>
+
+// Full page loader
+<PageLoader text="Loading dashboard..." />
+
+// Inline loader
+<InlineLoader text="Saving..." size="sm" />
 ```
 
 ---
@@ -558,4 +602,212 @@ interface PageHeaderProps {
   description="Manage your sentiment analysis projects"
   actions={<Button>New Project</Button>}
 />
+```
+
+---
+
+## Error Handling Components
+
+### ErrorBoundary
+
+React error boundary for catching component errors.
+
+```typescript
+interface ErrorBoundaryProps {
+  children: ReactNode;
+  fallback?: ReactNode;
+  onError?: (error: Error, errorInfo: ErrorInfo) => void;
+}
+```
+
+**Usage:**
+
+```tsx
+<ErrorBoundary
+  fallback={<ErrorDisplay title="Something went wrong" />}
+  onError={(error) => logError(error)}
+>
+  <Dashboard />
+</ErrorBoundary>
+```
+
+---
+
+### ErrorDisplay
+
+Styled error message display.
+
+```typescript
+interface ErrorDisplayProps {
+  error?: Error | string;
+  title?: string;
+  message?: string;
+  onRetry?: () => void;
+  showDetails?: boolean;
+}
+```
+
+**Usage:**
+
+```tsx
+<ErrorDisplay
+  title="Failed to load projects"
+  message="Please check your connection and try again"
+  onRetry={refetch}
+  showDetails
+/>
+```
+
+---
+
+### ApiError
+
+API-specific error display with status codes.
+
+```typescript
+interface ApiErrorProps {
+  status: number;
+  message?: string;
+  onRetry?: () => void;
+}
+```
+
+**Usage:**
+
+```tsx
+<ApiError status={404} message="Project not found" />
+<ApiError status={500} onRetry={refetch} />
+```
+
+---
+
+## Empty State Components
+
+### EmptyState
+
+Generic empty state with icon, title, and action.
+
+```typescript
+interface EmptyStateProps {
+  icon?: ReactNode;
+  title: string;
+  description?: string;
+  action?: {
+    label: string;
+    onClick: () => void;
+  };
+  secondaryAction?: {
+    label: string;
+    onClick: () => void;
+  };
+  size?: 'sm' | 'md' | 'lg';
+}
+```
+
+**Pre-built Empty States:**
+
+```tsx
+// No projects
+<EmptyProjects onCreateProject={() => router.push('/projects/new')} />
+
+// No targets
+<EmptyTargets onAddTarget={() => setShowAddModal(true)} />
+
+// No results
+<EmptyResults onRunScrape={handleRunScrape} />
+
+// No search results
+<EmptySearch query={searchQuery} onClear={() => setSearchQuery('')} />
+
+// No webhooks
+<EmptyWebhooks onCreateWebhook={() => setShowCreateModal(true)} />
+
+// No schedules
+<EmptySchedules onCreateSchedule={() => setShowCreateModal(true)} />
+```
+
+---
+
+## Toast Notifications
+
+### Toast System
+
+Global toast notification system.
+
+```typescript
+interface Toast {
+  id: string;
+  type: 'success' | 'error' | 'warning' | 'info';
+  title: string;
+  message?: string;
+  duration?: number;
+}
+
+interface ToastContextType {
+  addToast: (toast: Omit<Toast, 'id'>) => string;
+  removeToast: (id: string) => void;
+  success: (title: string, message?: string) => string;
+  error: (title: string, message?: string) => string;
+  warning: (title: string, message?: string) => string;
+  info: (title: string, message?: string) => string;
+}
+```
+
+**Usage:**
+
+```tsx
+// Wrap app with provider
+<ToastProvider>
+  <App />
+</ToastProvider>
+
+// Use in components
+const { success, error } = useToast();
+
+const handleSave = async () => {
+  try {
+    await saveProject();
+    success('Project saved', 'Your changes have been saved successfully');
+  } catch (err) {
+    error('Save failed', 'Unable to save project. Please try again.');
+  }
+};
+```
+
+---
+
+## Component Location
+
+All UI components are located in:
+
+```
+frontend/src/components/
+├── ui/
+│   ├── button.tsx
+│   ├── input.tsx
+│   ├── card.tsx
+│   ├── skeleton.tsx
+│   ├── spinner.tsx
+│   ├── error-boundary.tsx
+│   ├── empty-state.tsx
+│   ├── toast.tsx
+│   └── index.ts
+├── forms/
+├── features/
+└── layout/
+```
+
+Import from the barrel file:
+
+```tsx
+import {
+  Button,
+  Input,
+  Card,
+  Skeleton,
+  Spinner,
+  ErrorBoundary,
+  EmptyState,
+  useToast
+} from '@/components/ui';
 ```

@@ -7,34 +7,42 @@ Sentimatrix Studio is a full-stack web application that provides a no-code inter
 ## System Architecture
 
 ```
-┌─────────────────────────────────────────────────────────────────────────┐
-│                           Sentimatrix Studio                             │
-├─────────────────────────────────────────────────────────────────────────┤
-│                                                                          │
-│  ┌──────────────┐    ┌──────────────┐    ┌──────────────────────────┐  │
-│  │   Frontend   │    │   Backend    │    │       Database           │  │
-│  │   (Next.js)  │◄──►│  (FastAPI)   │◄──►│       (MongoDB)          │  │
-│  └──────────────┘    └──────────────┘    └──────────────────────────┘  │
-│         │                   │                        │                   │
-│         │                   ▼                        │                   │
-│         │            ┌──────────────┐                │                   │
-│         │            │  Sentimatrix │                │                   │
-│         │            │    Library   │                │                   │
-│         │            └──────────────┘                │                   │
-│         │                   │                        │                   │
-│         │         ┌─────────┴─────────┐              │                   │
-│         │         ▼                   ▼              │                   │
-│         │  ┌────────────┐    ┌────────────┐         │                   │
-│         │  │  Scrapers  │    │    LLMs    │         │                   │
-│         │  └────────────┘    └────────────┘         │                   │
-│         │         │                   │              │                   │
-│         ▼         ▼                   ▼              ▼                   │
-│  ┌──────────────────────────────────────────────────────────────────┐  │
-│  │                    External Services                              │  │
-│  │  Amazon  Steam  YouTube  Reddit  IMDB  OpenAI  Groq  Anthropic   │  │
-│  └──────────────────────────────────────────────────────────────────┘  │
-│                                                                          │
-└─────────────────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                           Sentimatrix Studio                                 │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                              │
+│  ┌──────────────┐    ┌──────────────┐    ┌─────────────┐  ┌─────────────┐  │
+│  │   Frontend   │    │   Backend    │    │   MongoDB   │  │    Redis    │  │
+│  │   (Next.js)  │◄──►│  (FastAPI)   │◄──►│  (Database) │  │   (Cache)   │  │
+│  └──────────────┘    └──────────────┘    └─────────────┘  └─────────────┘  │
+│         │                   │                                               │
+│         │         ┌─────────┴─────────────┐                                 │
+│         │         ▼                       ▼                                 │
+│         │  ┌────────────────┐    ┌────────────────┐                        │
+│         │  │  Job Workers   │    │   Scheduler    │                        │
+│         │  │ (Background)   │    │  (Cron Jobs)   │                        │
+│         │  └────────────────┘    └────────────────┘                        │
+│         │         │                       │                                 │
+│         │         ▼                       ▼                                 │
+│         │  ┌──────────────────────────────────────┐                        │
+│         │  │         Sentimatrix Library          │                        │
+│         │  │   (Scraping + Analysis Engine)       │                        │
+│         │  └──────────────────────────────────────┘                        │
+│         │         │                       │                                 │
+│         │  ┌──────┴───────┐       ┌──────┴───────┐                        │
+│         │  ▼              ▼       ▼              ▼                         │
+│         │  ┌────────────┐  ┌────────────┐  ┌────────────┐                 │
+│         │  │  Scrapers  │  │    LLMs    │  │  Webhooks  │                 │
+│         │  └────────────┘  └────────────┘  └────────────┘                 │
+│         │         │              │                │                        │
+│         ▼         ▼              ▼                ▼                        │
+│  ┌──────────────────────────────────────────────────────────────────────┐ │
+│  │                       External Services                               │ │
+│  │  Amazon  Steam  YouTube  Reddit  Trustpilot  Yelp  Google Reviews    │ │
+│  │  OpenAI  Groq  Anthropic  ScraperAPI  Apify  BrightData  Custom      │ │
+│  └──────────────────────────────────────────────────────────────────────┘ │
+│                                                                              │
+└─────────────────────────────────────────────────────────────────────────────┘
 ```
 
 ## Core Components
@@ -75,7 +83,19 @@ The backend is built with FastAPI, providing:
 - Project and configuration management
 - Scraping job orchestration
 - Analysis pipeline execution
-- Webhook integrations
+- Webhook integrations with HMAC signing
+- Scheduled job execution
+- Rate limiting (token bucket algorithm)
+- Response caching with TTL
+- API key encryption (AES-256)
+
+**Core Modules:**
+- `app/core/` - Configuration, security, database, caching, rate limiting, validators
+- `app/api/` - API route handlers organized by version
+- `app/models/` - Pydantic schemas for all entities
+- `app/repositories/` - Database access layer
+- `app/services/` - Business logic (scraping, analysis, scheduling, webhooks)
+- `app/workers/` - Background job processors
 
 ### 3. Database (MongoDB)
 
@@ -83,11 +103,25 @@ MongoDB is used for flexible document storage:
 
 - Users and authentication
 - Projects and configurations
-- Scraping results
-- Analysis data
+- Targets (URLs to scrape)
+- Scrape jobs and status
+- Analysis results
+- Schedules
+- Webhooks and delivery logs
+- Encrypted API keys
 - Audit logs
 
-### 4. Sentimatrix Library
+### 4. Cache (Redis)
+
+Redis provides:
+
+- API response caching with TTL
+- Rate limit counters (token bucket)
+- Session management
+- Job queue for background tasks
+- Real-time pub/sub for live updates
+
+### 5. Sentimatrix Library
 
 The core Sentimatrix library provides:
 
@@ -183,16 +217,20 @@ All long-running operations provide real-time progress updates via WebSockets.
 
 - Stateless backend enables multiple instances
 - MongoDB replica sets for database scaling
-- Redis for session storage and caching (future)
+- Redis cluster for distributed caching
+- Load balancing with Traefik or nginx
 
 ### Background Processing
 
 - FastAPI BackgroundTasks for simple jobs
-- Celery with Redis for complex workflows (future)
+- ARQ (Redis-based) for job queue
+- Scheduler service for cron-like scheduled tasks
+- Worker pool for concurrent job execution
 
 ### Caching Strategy
 
-- In-memory caching for frequently accessed data
+- Redis for API response caching with TTL
+- In-memory caching for hot data (LRU)
 - MongoDB aggregation pipelines for analytics
 - CDN for static assets
 
@@ -201,9 +239,50 @@ All long-running operations provide real-time progress updates via WebSockets.
 See [security.md](security.md) for detailed security documentation.
 
 **Key Security Features:**
-- JWT tokens with refresh mechanism
+- JWT tokens with refresh mechanism (30 min access, 7 day refresh)
 - Password hashing with bcrypt
-- Rate limiting per user/IP
-- Input sanitization
-- CORS configuration
-- API key encryption at rest
+- Rate limiting per user/IP (token bucket algorithm)
+- Input sanitization and validation
+- CORS configuration with allowed origins
+- API key encryption at rest (AES-256 with Fernet)
+- HMAC-SHA256 webhook payload signing
+- Request ID tracking for audit trails
+
+## API Architecture
+
+The API follows RESTful conventions:
+
+**Endpoints:**
+- `/api/v1/auth/*` - Authentication (login, register, refresh, logout)
+- `/api/v1/projects/*` - Project management
+- `/api/v1/projects/{id}/targets/*` - Target management
+- `/api/v1/projects/{id}/jobs/*` - Scrape jobs
+- `/api/v1/projects/{id}/results/*` - Analysis results
+- `/api/v1/schedules/*` - Scheduled jobs
+- `/api/v1/webhooks/*` - Webhook management
+- `/api/v1/settings/*` - User settings and API keys
+- `/api/v1/dashboard/*` - Dashboard statistics
+
+**Response Format:**
+- Paginated lists return `{items, total, page, per_page, pages}`
+- Single resources return the full object
+- Errors return `{detail, code}` with appropriate HTTP status
+
+## Testing Architecture
+
+**Backend Testing:**
+- pytest with pytest-asyncio for async tests
+- mongomock for database mocking
+- fakeredis for cache mocking
+- httpx AsyncClient for API testing
+
+**Frontend Testing:**
+- Jest with React Testing Library for components
+- Playwright for E2E testing
+- MSW for API mocking
+
+**Test Organization:**
+- `tests/unit/` - Unit tests for models, validators, utilities
+- `tests/api/` - API endpoint integration tests
+- `tests/integration/` - Service integration tests
+- `e2e/tests/` - End-to-end browser tests

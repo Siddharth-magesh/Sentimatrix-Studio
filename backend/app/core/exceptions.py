@@ -130,6 +130,14 @@ class DuplicateError(StudioException):
     message = "Resource already exists"
 
 
+class ConflictError(StudioException):
+    """Conflict with current state."""
+
+    status_code = 409
+    error_code = "CONFLICT_ERROR"
+    message = "Operation conflicts with current state"
+
+
 class EmailAlreadyExistsError(DuplicateError):
     """Email already registered."""
 

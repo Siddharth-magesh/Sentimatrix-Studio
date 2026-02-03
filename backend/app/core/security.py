@@ -101,3 +101,75 @@ def get_token_expiry(token: str) -> datetime | None:
         return None
     except Exception:
         return None
+
+
+def create_password_reset_token(email: str) -> str:
+    """Create a password reset token."""
+    settings = get_settings()
+
+    # Token expires in 1 hour
+    expires_delta = timedelta(hours=1)
+    expire = datetime.utcnow() + expires_delta
+
+    to_encode = {
+        "sub": email,
+        "exp": expire,
+        "iat": datetime.utcnow(),
+        "type": "password_reset",
+    }
+
+    return jwt.encode(
+        to_encode,
+        settings.jwt_secret_key,
+        algorithm=settings.jwt_algorithm,
+    )
+
+
+def verify_password_reset_token(token: str) -> str:
+    """Verify a password reset token and return the email."""
+    payload = decode_token(token)
+
+    if payload.get("type") != "password_reset":
+        raise InvalidTokenError("Invalid token type")
+
+    email = payload.get("sub")
+    if not email:
+        raise InvalidTokenError("Invalid token")
+
+    return email
+
+
+def create_email_verification_token(email: str) -> str:
+    """Create an email verification token."""
+    settings = get_settings()
+
+    # Token expires in 24 hours
+    expires_delta = timedelta(hours=24)
+    expire = datetime.utcnow() + expires_delta
+
+    to_encode = {
+        "sub": email,
+        "exp": expire,
+        "iat": datetime.utcnow(),
+        "type": "email_verification",
+    }
+
+    return jwt.encode(
+        to_encode,
+        settings.jwt_secret_key,
+        algorithm=settings.jwt_algorithm,
+    )
+
+
+def verify_email_verification_token(token: str) -> str:
+    """Verify an email verification token and return the email."""
+    payload = decode_token(token)
+
+    if payload.get("type") != "email_verification":
+        raise InvalidTokenError("Invalid token type")
+
+    email = payload.get("sub")
+    if not email:
+        raise InvalidTokenError("Invalid token")
+
+    return email

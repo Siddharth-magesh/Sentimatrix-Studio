@@ -2,7 +2,7 @@
 
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, Query, status
 
 from app.core.database import get_database
 from app.core.deps import get_current_user
@@ -13,9 +13,11 @@ from app.models.llm_provider import (
     LLMProviderInfo,
     LLM_PROVIDERS,
 )
+from app.models.preset import Preset, PresetCreate, PresetUpdate, PresetList
 from app.models.user import User
 from app.repositories.api_key import APIKeyRepository, get_api_key_repository
-from app.services.presets import get_all_presets, get_preset_details
+from app.repositories.preset import PresetRepository, get_preset_repository
+from app.services.presets import get_all_presets, get_preset_details, get_preset_config
 
 router = APIRouter()
 
@@ -202,15 +204,32 @@ async def test_api_key(
 @router.get(
     "/presets",
     response_model=list[dict],
-    summary="List presets",
+    summary="List all presets",
 )
 async def list_presets(
     current_user: Annotated[User, Depends(get_current_user)],
+    preset_repo: Annotated[PresetRepository, Depends(get_preset_repository)],
+    include_custom: bool = Query(True, description="Include user's custom presets"),
 ) -> list[dict]:
     """
-    Get list of available project presets.
+    Get list of available project presets (system + custom).
     """
-    return get_all_presets()
+    # Get system presets
+    presets = get_all_presets()
+
+    # Add custom presets if requested
+    if include_custom and current_user.id:
+        custom_presets = await preset_repo.get_presets(current_user.id)
+        for preset in custom_presets.items:
+            presets.append({
+                "id": preset.id,
+                "name": preset.name,
+                "description": preset.description,
+                "is_system": False,
+                "is_custom": True,
+            })
+
+    return presets
 
 
 @router.get(
@@ -221,15 +240,151 @@ async def list_presets(
 async def get_preset(
     preset_id: str,
     current_user: Annotated[User, Depends(get_current_user)],
+    preset_repo: Annotated[PresetRepository, Depends(get_preset_repository)],
 ) -> dict:
     """
     Get full details for a specific preset including configuration.
     """
+    # Try system preset first
     details = get_preset_details(preset_id)
-    if not details:
+    if details:
+        details["is_system"] = True
+        details["is_custom"] = False
+        return details
+
+    # Try custom preset
+    if current_user.id:
+        try:
+            preset = await preset_repo.get_preset(preset_id, current_user.id)
+            return {
+                "id": preset.id,
+                "name": preset.name,
+                "description": preset.description,
+                "config": preset.config if isinstance(preset.config, dict) else preset.config.model_dump(),
+                "is_system": False,
+                "is_custom": True,
+            }
+        except Exception:
+            pass
+
+    from fastapi import HTTPException
+    raise HTTPException(
+        status_code=status.HTTP_404_NOT_FOUND,
+        detail=f"Preset '{preset_id}' not found",
+    )
+
+
+@router.post(
+    "/presets",
+    response_model=Preset,
+    status_code=status.HTTP_201_CREATED,
+    summary="Create custom preset",
+)
+async def create_preset(
+    preset_data: PresetCreate,
+    current_user: Annotated[User, Depends(get_current_user)],
+    preset_repo: Annotated[PresetRepository, Depends(get_preset_repository)],
+) -> Preset:
+    """
+    Create a new custom preset.
+
+    - **name**: Preset name (required, must be unique)
+    - **description**: Description (optional)
+    - **config**: Project configuration
+    """
+    if not current_user.id:
         from fastapi import HTTPException
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Preset '{preset_id}' not found",
+        raise HTTPException(status_code=400, detail="Invalid user")
+
+    return await preset_repo.create_preset(
+        user_id=current_user.id,
+        preset_data=preset_data,
+    )
+
+
+@router.put(
+    "/presets/{preset_id}",
+    response_model=Preset,
+    summary="Update custom preset",
+)
+async def update_preset(
+    preset_id: str,
+    update_data: PresetUpdate,
+    current_user: Annotated[User, Depends(get_current_user)],
+    preset_repo: Annotated[PresetRepository, Depends(get_preset_repository)],
+) -> Preset:
+    """
+    Update a custom preset.
+
+    System presets cannot be modified.
+    """
+    if not current_user.id:
+        from fastapi import HTTPException
+        raise HTTPException(status_code=400, detail="Invalid user")
+
+    return await preset_repo.update_preset(
+        preset_id=preset_id,
+        user_id=current_user.id,
+        update_data=update_data,
+    )
+
+
+@router.delete(
+    "/presets/{preset_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    summary="Delete custom preset",
+)
+async def delete_preset(
+    preset_id: str,
+    current_user: Annotated[User, Depends(get_current_user)],
+    preset_repo: Annotated[PresetRepository, Depends(get_preset_repository)],
+) -> None:
+    """
+    Delete a custom preset.
+
+    System presets cannot be deleted.
+    """
+    if not current_user.id:
+        from fastapi import HTTPException
+        raise HTTPException(status_code=400, detail="Invalid user")
+
+    await preset_repo.delete_preset(preset_id, current_user.id)
+
+
+@router.post(
+    "/presets/{preset_id}/duplicate",
+    response_model=Preset,
+    status_code=status.HTTP_201_CREATED,
+    summary="Duplicate preset",
+)
+async def duplicate_preset(
+    preset_id: str,
+    current_user: Annotated[User, Depends(get_current_user)],
+    preset_repo: Annotated[PresetRepository, Depends(get_preset_repository)],
+    name: str | None = Query(None, description="Name for the duplicate"),
+) -> Preset:
+    """
+    Duplicate a preset (system or custom).
+    """
+    if not current_user.id:
+        from fastapi import HTTPException
+        raise HTTPException(status_code=400, detail="Invalid user")
+
+    # Check if it's a system preset
+    system_config = get_preset_config(preset_id)
+    if system_config:
+        # Create custom preset from system preset
+        system_details = get_preset_details(preset_id)
+        preset_data = PresetCreate(
+            name=name or f"{system_details['name']} (Custom)",
+            description=system_details["description"],
+            config=system_config,
         )
-    return details
+        return await preset_repo.create_preset(current_user.id, preset_data)
+
+    # Duplicate custom preset
+    return await preset_repo.duplicate_preset(
+        preset_id=preset_id,
+        user_id=current_user.id,
+        new_name=name,
+    )

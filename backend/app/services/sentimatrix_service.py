@@ -4,9 +4,7 @@ import logging
 from datetime import datetime, timezone
 from typing import Any
 
-from sentimatrix import Sentimatrix
-from sentimatrix.config import SentimatrixConfig
-from sentimatrix.scrapers import ScraperConfig as SMScraperConfig
+from sentimatrix import Sentimatrix, SentimatrixConfig, ScraperConfig as SMScraperConfig
 
 from app.models.project import LLMConfig, AnalysisConfig, LimitsConfig
 from app.models.result import (

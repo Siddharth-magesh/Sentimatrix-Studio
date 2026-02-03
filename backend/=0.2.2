@@ -1,0 +1,48 @@
+Defaulting to user installation because normal site-packages is not writeable
+WARNING: Ignoring invalid distribution -umpy (/home/siddharth/.local/lib/python3.10/site-packages)
+Looking in indexes: https://pypi.org/simple, https://pypi.ngc.nvidia.com
+Requirement already satisfied: sentimatrix in /home/siddharth/.local/lib/python3.10/site-packages (0.2.1)
+Collecting sentimatrix
+  Downloading sentimatrix-0.2.2-py3-none-any.whl.metadata (13 kB)
+Requirement already satisfied: aiohttp>=3.9.0 in /home/siddharth/.local/lib/python3.10/site-packages (from sentimatrix) (3.13.2)
+Requirement already satisfied: httpx>=0.25.0 in /home/siddharth/.local/lib/python3.10/site-packages (from sentimatrix) (0.28.1)
+Requirement already satisfied: pydantic-settings>=2.0.0 in /home/siddharth/.local/lib/python3.10/site-packages (from sentimatrix) (2.12.0)
+Requirement already satisfied: pydantic>=2.0.0 in /home/siddharth/.local/lib/python3.10/site-packages (from sentimatrix) (2.12.5)
+Requirement already satisfied: python-dotenv>=1.0.0 in /home/siddharth/.local/lib/python3.10/site-packages (from sentimatrix) (1.2.1)
+Requirement already satisfied: pyyaml>=6.0 in /usr/local/lib/python3.10/dist-packages (from sentimatrix) (6.0.1)
+Requirement already satisfied: rich>=13.0.0 in /home/siddharth/.local/lib/python3.10/site-packages (from sentimatrix) (14.3.1)
+Requirement already satisfied: structlog>=23.0.0 in /home/siddharth/.local/lib/python3.10/site-packages (from sentimatrix) (25.5.0)
+Requirement already satisfied: tenacity>=8.2.0 in /home/siddharth/.local/lib/python3.10/site-packages (from sentimatrix) (9.1.2)
+Requirement already satisfied: aiohappyeyeballs>=2.5.0 in /home/siddharth/.local/lib/python3.10/site-packages (from aiohttp>=3.9.0->sentimatrix) (2.6.1)
+Requirement already satisfied: aiosignal>=1.4.0 in /home/siddharth/.local/lib/python3.10/site-packages (from aiohttp>=3.9.0->sentimatrix) (1.4.0)
+Requirement already satisfied: async-timeout<6.0,>=4.0 in /usr/local/lib/python3.10/dist-packages (from aiohttp>=3.9.0->sentimatrix) (4.0.3)
+Requirement already satisfied: attrs>=17.3.0 in /home/siddharth/.local/lib/python3.10/site-packages (from aiohttp>=3.9.0->sentimatrix) (25.4.0)
+Requirement already satisfied: frozenlist>=1.1.1 in /usr/local/lib/python3.10/dist-packages (from aiohttp>=3.9.0->sentimatrix) (1.4.0)
+Requirement already satisfied: multidict<7.0,>=4.5 in /usr/local/lib/python3.10/dist-packages (from aiohttp>=3.9.0->sentimatrix) (6.0.4)
+Requirement already satisfied: propcache>=0.2.0 in /home/siddharth/.local/lib/python3.10/site-packages (from aiohttp>=3.9.0->sentimatrix) (0.4.1)
+Requirement already satisfied: yarl<2.0,>=1.17.0 in /home/siddharth/.local/lib/python3.10/site-packages (from aiohttp>=3.9.0->sentimatrix) (1.22.0)
+Requirement already satisfied: idna>=2.0 in /usr/local/lib/python3.10/dist-packages (from yarl<2.0,>=1.17.0->aiohttp>=3.9.0->sentimatrix) (3.4)
+Requirement already satisfied: typing-extensions>=4.2 in /home/siddharth/.local/lib/python3.10/site-packages (from aiosignal>=1.4.0->aiohttp>=3.9.0->sentimatrix) (4.15.0)
+Requirement already satisfied: anyio in /home/siddharth/.local/lib/python3.10/site-packages (from httpx>=0.25.0->sentimatrix) (4.12.0)
+Requirement already satisfied: certifi in /home/siddharth/.local/lib/python3.10/site-packages (from httpx>=0.25.0->sentimatrix) (2025.11.12)
+Requirement already satisfied: httpcore==1.* in /home/siddharth/.local/lib/python3.10/site-packages (from httpx>=0.25.0->sentimatrix) (1.0.9)
+Requirement already satisfied: h11>=0.16 in /home/siddharth/.local/lib/python3.10/site-packages (from httpcore==1.*->httpx>=0.25.0->sentimatrix) (0.16.0)
+Requirement already satisfied: annotated-types>=0.6.0 in /home/siddharth/.local/lib/python3.10/site-packages (from pydantic>=2.0.0->sentimatrix) (0.7.0)
+Requirement already satisfied: pydantic-core==2.41.5 in /home/siddharth/.local/lib/python3.10/site-packages (from pydantic>=2.0.0->sentimatrix) (2.41.5)
+Requirement already satisfied: typing-inspection>=0.4.2 in /home/siddharth/.local/lib/python3.10/site-packages (from pydantic>=2.0.0->sentimatrix) (0.4.2)
+Requirement already satisfied: markdown-it-py>=2.2.0 in /usr/local/lib/python3.10/dist-packages (from rich>=13.0.0->sentimatrix) (3.0.0)
+Requirement already satisfied: pygments<3.0.0,>=2.13.0 in /usr/local/lib/python3.10/dist-packages (from rich>=13.0.0->sentimatrix) (2.16.1)
+Requirement already satisfied: mdurl~=0.1 in /usr/local/lib/python3.10/dist-packages (from markdown-it-py>=2.2.0->rich>=13.0.0->sentimatrix) (0.1.2)
+Requirement already satisfied: exceptiongroup>=1.0.2 in /home/siddharth/.local/lib/python3.10/site-packages (from anyio->httpx>=0.25.0->sentimatrix) (1.3.1)
+Downloading sentimatrix-0.2.2-py3-none-any.whl (315 kB)
+WARNING: Ignoring invalid distribution -umpy (/home/siddharth/.local/lib/python3.10/site-packages)
+Installing collected packages: sentimatrix
+  Attempting uninstall: sentimatrix
+    Found existing installation: sentimatrix 0.2.1
+    Uninstalling sentimatrix-0.2.1:
+      Successfully uninstalled sentimatrix-0.2.1
+WARNING: Ignoring invalid distribution -umpy (/home/siddharth/.local/lib/python3.10/site-packages)
+Successfully installed sentimatrix-0.2.2
+
+[notice] A new release of pip is available: 25.3 -> 26.0
+[notice] To update, run: python3 -m pip install --upgrade pip

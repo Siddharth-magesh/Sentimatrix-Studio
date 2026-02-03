@@ -8,6 +8,7 @@ import {
   Settings,
   BarChart3,
   Sliders,
+  CreditCard,
   X,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -22,6 +23,7 @@ const navItems = [
   { href: '/dashboard/projects', label: 'Projects', icon: FolderOpen },
   { href: '/dashboard/results', label: 'Results', icon: BarChart3 },
   { href: '/dashboard/presets', label: 'Presets', icon: Sliders },
+  { href: '/dashboard/billing', label: 'Billing', icon: CreditCard },
   { href: '/dashboard/settings', label: 'Settings', icon: Settings },
 ];
 
