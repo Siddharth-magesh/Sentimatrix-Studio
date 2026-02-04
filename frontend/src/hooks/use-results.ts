@@ -37,7 +37,7 @@ export function useResults(
     queryFn: () => isAllProjects
       ? api.getAllResults(params)
       : api.getResults(projectId, params),
-    enabled: !!projectId,
+    enabled: !!projectId && projectId !== 'undefined',
   });
 }
 
@@ -46,7 +46,7 @@ export function useResult(projectId: string, resultId: string) {
   return useQuery({
     queryKey: resultKeys.detail(projectId, resultId),
     queryFn: () => api.getResult(projectId, resultId),
-    enabled: !!projectId && !!resultId,
+    enabled: !!projectId && !!resultId && projectId !== 'undefined' && resultId !== 'undefined',
   });
 }
 
@@ -84,7 +84,7 @@ export function useGlobalSentimentTimeline(
 // Delete result
 export function useDeleteResult() {
   const queryClient = useQueryClient();
-  const { toast } = useToast();
+  const toast = useToast();
 
   return useMutation({
     mutationFn: ({ projectId, resultId }: { projectId: string; resultId: string }) =>
@@ -102,7 +102,7 @@ export function useDeleteResult() {
 
 // Export results
 export function useExportResults() {
-  const { toast } = useToast();
+  const toast = useToast();
 
   return useMutation({
     mutationFn: ({ projectId, format }: { projectId: string; format: 'csv' | 'json' | 'xlsx' }) =>

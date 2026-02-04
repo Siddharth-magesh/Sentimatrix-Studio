@@ -147,6 +147,33 @@ LLM_PROVIDERS: dict[str, LLMProviderInfo] = {
         ],
         supported_features=["sentiment", "emotions"],
     ),
+    "scraperapi": LLMProviderInfo(
+        id="scraperapi",
+        name="ScraperAPI",
+        description="Web scraping API service",
+        website="https://scraperapi.com",
+        requires_api_key=True,
+        models=[],
+        supported_features=["scraping"],
+    ),
+    "apify": LLMProviderInfo(
+        id="apify",
+        name="Apify",
+        description="Web scraping and automation platform",
+        website="https://apify.com",
+        requires_api_key=True,
+        models=[],
+        supported_features=["scraping"],
+    ),
+    "scrapingbee": LLMProviderInfo(
+        id="scrapingbee",
+        name="ScrapingBee",
+        description="Web scraping API with headless browsers",
+        website="https://scrapingbee.com",
+        requires_api_key=True,
+        models=[],
+        supported_features=["scraping"],
+    ),
 }
 
 

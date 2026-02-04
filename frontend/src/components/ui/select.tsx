@@ -10,28 +10,20 @@ export interface SelectOption {
   disabled?: boolean;
 }
 
-export interface SelectProps extends Omit<SelectHTMLAttributes<HTMLSelectElement>, 'onChange'> {
+export interface SelectProps extends SelectHTMLAttributes<HTMLSelectElement> {
   options: SelectOption[];
   placeholder?: string;
   error?: boolean;
-  onChange?: (value: string) => void;
 }
 
 const Select = forwardRef<HTMLSelectElement, SelectProps>(
-  ({ className, options, placeholder = 'Select...', error, onChange, value, disabled, ...props }, ref) => {
-    const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-      if (onChange) {
-        onChange(e.target.value);
-      }
-    };
-
+  ({ className, options, placeholder = 'Select...', error, value, disabled, ...props }, ref) => {
     return (
       <div className="relative">
         <select
           ref={ref}
           value={value}
           disabled={disabled}
-          onChange={handleChange}
           className={cn(
             'flex h-10 w-full appearance-none rounded-lg border bg-white px-3 py-2 pr-10 text-sm',
             'focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent',

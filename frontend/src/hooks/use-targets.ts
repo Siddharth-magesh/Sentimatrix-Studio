@@ -17,14 +17,14 @@ export function useTargets(projectId: string) {
   return useQuery({
     queryKey: targetKeys.list(projectId),
     queryFn: () => api.getTargets(projectId),
-    enabled: !!projectId,
+    enabled: !!projectId && projectId !== 'undefined',
   });
 }
 
 // Add target
 export function useAddTarget() {
   const queryClient = useQueryClient();
-  const { toast } = useToast();
+  const toast = useToast();
 
   return useMutation({
     mutationFn: ({ projectId, data }: { projectId: string; data: { url: string; name?: string } }) =>
@@ -43,7 +43,7 @@ export function useAddTarget() {
 // Add multiple targets
 export function useAddTargetsBulk() {
   const queryClient = useQueryClient();
-  const { toast } = useToast();
+  const toast = useToast();
 
   return useMutation({
     mutationFn: ({ projectId, urls }: { projectId: string; urls: string[] }) =>
@@ -62,7 +62,7 @@ export function useAddTargetsBulk() {
 // Delete target
 export function useDeleteTarget() {
   const queryClient = useQueryClient();
-  const { toast } = useToast();
+  const toast = useToast();
 
   return useMutation({
     mutationFn: ({ projectId, targetId }: { projectId: string; targetId: string }) =>

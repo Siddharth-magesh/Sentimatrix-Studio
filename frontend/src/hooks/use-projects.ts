@@ -32,7 +32,7 @@ export function useProject(id: string) {
   return useQuery({
     queryKey: projectKeys.detail(id),
     queryFn: () => api.getProject(id),
-    enabled: !!id,
+    enabled: !!id && id !== 'undefined',
   });
 }
 
@@ -41,7 +41,7 @@ export function useProjectStats(id: string) {
   return useQuery({
     queryKey: projectKeys.stats(id),
     queryFn: () => api.getProjectStats(id),
-    enabled: !!id,
+    enabled: !!id && id !== 'undefined',
   });
 }
 

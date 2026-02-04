@@ -22,7 +22,7 @@ export function useApiKeys() {
 
 export function useAddApiKey() {
   const queryClient = useQueryClient();
-  const { toast } = useToast();
+  const toast = useToast();
 
   return useMutation({
     mutationFn: (data: { provider: string; api_key: string }) => api.addApiKey(data),
@@ -38,7 +38,7 @@ export function useAddApiKey() {
 
 export function useDeleteApiKey() {
   const queryClient = useQueryClient();
-  const { toast } = useToast();
+  const toast = useToast();
 
   return useMutation({
     mutationFn: (provider: string) => api.deleteApiKey(provider),
@@ -53,7 +53,7 @@ export function useDeleteApiKey() {
 }
 
 export function useTestApiKey() {
-  const { toast } = useToast();
+  const toast = useToast();
 
   return useMutation({
     mutationFn: (provider: string) => api.testApiKey(provider),
@@ -97,7 +97,7 @@ export function usePreset(id: string) {
 
 export function useCreatePreset() {
   const queryClient = useQueryClient();
-  const { toast } = useToast();
+  const toast = useToast();
 
   return useMutation({
     mutationFn: (data: CreatePresetData) => api.createPreset(data),
@@ -113,7 +113,7 @@ export function useCreatePreset() {
 
 export function useUpdatePreset() {
   const queryClient = useQueryClient();
-  const { toast } = useToast();
+  const toast = useToast();
 
   return useMutation({
     mutationFn: ({ id, data }: { id: string; data: Partial<CreatePresetData> }) =>
@@ -131,7 +131,7 @@ export function useUpdatePreset() {
 
 export function useDeletePreset() {
   const queryClient = useQueryClient();
-  const { toast } = useToast();
+  const toast = useToast();
 
   return useMutation({
     mutationFn: (id: string) => api.deletePreset(id),
@@ -180,7 +180,7 @@ export function useWebhooks() {
 
 export function useCreateWebhook() {
   const queryClient = useQueryClient();
-  const { toast } = useToast();
+  const toast = useToast();
 
   return useMutation({
     mutationFn: (data: CreateWebhookData) => api.createWebhook(data),
@@ -196,7 +196,7 @@ export function useCreateWebhook() {
 
 export function useUpdateWebhook() {
   const queryClient = useQueryClient();
-  const { toast } = useToast();
+  const toast = useToast();
 
   return useMutation({
     mutationFn: ({ id, data }: { id: string; data: Partial<CreateWebhookData> }) =>
@@ -213,7 +213,7 @@ export function useUpdateWebhook() {
 
 export function useDeleteWebhook() {
   const queryClient = useQueryClient();
-  const { toast } = useToast();
+  const toast = useToast();
 
   return useMutation({
     mutationFn: (id: string) => api.deleteWebhook(id),
@@ -228,7 +228,7 @@ export function useDeleteWebhook() {
 }
 
 export function useTestWebhook() {
-  const { toast } = useToast();
+  const toast = useToast();
 
   return useMutation({
     mutationFn: (id: string) => api.testWebhook(id),
@@ -272,7 +272,7 @@ export function useProjectSchedule(projectId: string) {
 
 export function useSetProjectSchedule() {
   const queryClient = useQueryClient();
-  const { toast } = useToast();
+  const toast = useToast();
 
   return useMutation({
     mutationFn: ({ projectId, data }: { projectId: string; data: ScheduleConfig }) =>
@@ -290,7 +290,7 @@ export function useSetProjectSchedule() {
 
 export function useToggleSchedule() {
   const queryClient = useQueryClient();
-  const { toast } = useToast();
+  const toast = useToast();
 
   return useMutation({
     mutationFn: (projectId: string) => api.toggleSchedule(projectId),
@@ -307,7 +307,7 @@ export function useToggleSchedule() {
 
 export function useDeleteSchedule() {
   const queryClient = useQueryClient();
-  const { toast } = useToast();
+  const toast = useToast();
 
   return useMutation({
     mutationFn: (projectId: string) => api.deleteSchedule(projectId),

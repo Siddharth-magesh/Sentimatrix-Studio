@@ -5,12 +5,13 @@ import { BarChart3 } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter, Button } from '@/components/ui';
 import { LoginForm } from '@/components/forms';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+// Base URL without /api/v1 suffix for OAuth redirects
+const BACKEND_BASE_URL = process.env.NEXT_PUBLIC_API_URL?.replace('/api/v1', '') || 'http://localhost:8000';
 
 export default function LoginPage() {
   const handleOAuthLogin = (provider: string) => {
     // Redirect to backend OAuth endpoint
-    window.location.href = `${API_BASE_URL}/api/v1/auth/oauth/${provider}`;
+    window.location.href = `${BACKEND_BASE_URL}/api/v1/auth/oauth/${provider}`;
   };
 
   return (

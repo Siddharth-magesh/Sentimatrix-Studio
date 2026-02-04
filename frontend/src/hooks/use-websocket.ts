@@ -55,7 +55,7 @@ export interface UseWebSocketOptions {
 
 export function useWebSocket(projectId?: string, options: UseWebSocketOptions = {}) {
   const { accessToken } = useAuthStore();
-  const { toast } = useToast();
+  const toast = useToast();
   const queryClient = useQueryClient();
 
   const [status, setStatus] = useState<WebSocketStatus>('disconnected');

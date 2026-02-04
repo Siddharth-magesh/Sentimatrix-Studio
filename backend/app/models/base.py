@@ -35,11 +35,14 @@ class StudioBaseModel(BaseModel):
         populate_by_name=True,
         arbitrary_types_allowed=True,
         str_strip_whitespace=True,
+        from_attributes=True,
     )
 
 
 class MongoBaseModel(StudioBaseModel):
     """Base model for MongoDB documents."""
+
+    model_config = ConfigDict(populate_by_name=True)
 
     id: Annotated[str | None, Field(alias="_id", default=None)]
 
@@ -52,7 +55,7 @@ class MongoBaseModel(StudioBaseModel):
             return str(v)
         return str(v)
 
-    @field_serializer("id")
+    @field_serializer("id", when_used="always")
     def serialize_id(self, v: str | None) -> str | None:
         return v
 

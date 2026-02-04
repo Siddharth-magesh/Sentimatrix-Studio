@@ -14,6 +14,7 @@ from app.models.project import (
     ProjectUpdate,
     ProjectConfig,
     ProjectStats,
+    PlatformLinks,
 )
 from app.repositories.base import BaseRepository
 from app.services.presets import get_preset_config
@@ -37,12 +38,24 @@ class ProjectRepository(BaseRepository[ProjectInDB]):
         if config is None:
             config = ProjectConfig()
 
+        # Handle product info
+        product = None
+        if project_data.product:
+            product = project_data.product.model_dump()
+
+        # Handle platform links
+        platform_links = PlatformLinks()
+        if project_data.platform_links:
+            platform_links = project_data.platform_links
+
         data = {
             "user_id": user_id,
             "name": project_data.name,
             "description": project_data.description,
             "preset": project_data.preset,
             "status": "active",
+            "product": product,
+            "platform_links": platform_links.model_dump(),
             "config": config.model_dump(),
             "stats": ProjectStats().model_dump(),
             "archived_at": None,
@@ -181,6 +194,8 @@ class ProjectRepository(BaseRepository[ProjectInDB]):
             description=project_in_db.description,
             status=project_in_db.status,
             preset=project_in_db.preset,
+            product=project_in_db.product,
+            platform_links=project_in_db.platform_links,
             config=project_in_db.config,
             stats=project_in_db.stats,
             archived_at=project_in_db.archived_at,

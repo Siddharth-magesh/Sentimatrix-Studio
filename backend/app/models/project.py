@@ -8,6 +8,71 @@ from pydantic import Field, field_validator
 from app.models.base import MongoBaseModel, StudioBaseModel, TimestampMixin
 
 
+# Product/Brand information
+class ProductInfo(StudioBaseModel):
+    """Product or brand information being monitored."""
+
+    name: str = Field(min_length=1, max_length=200, description="Product or brand name")
+    category: Literal[
+        "electronics",
+        "software",
+        "games",
+        "fashion",
+        "food",
+        "beauty",
+        "home",
+        "automotive",
+        "services",
+        "other",
+    ] = "other"
+    description: str = Field(default="", max_length=500)
+    website: str | None = Field(default=None, description="Official product/brand website")
+    competitors: list[str] = Field(default_factory=list, description="Competitor names to compare")
+
+
+# Platform-specific link configuration
+class PlatformLink(StudioBaseModel):
+    """Link for a specific platform."""
+
+    url: str
+    label: str | None = None
+    country: str | None = None  # For Amazon country-specific links
+    language: str | None = None  # For Steam language preference
+
+
+class PlatformLinks(StudioBaseModel):
+    """Links organized by platform."""
+
+    amazon: list[PlatformLink] = Field(default_factory=list)
+    steam: list[PlatformLink] = Field(default_factory=list)
+    youtube: list[PlatformLink] = Field(default_factory=list)
+    reddit: list[PlatformLink] = Field(default_factory=list)
+    google: list[PlatformLink] = Field(default_factory=list)
+    trustpilot: list[PlatformLink] = Field(default_factory=list)
+    yelp: list[PlatformLink] = Field(default_factory=list)
+
+    def get_all_urls(self) -> list[dict]:
+        """Get all URLs with their platform info."""
+        urls = []
+        for platform in ["amazon", "steam", "youtube", "reddit", "google", "trustpilot", "yelp"]:
+            for link in getattr(self, platform, []):
+                urls.append({
+                    "url": link.url,
+                    "platform": platform,
+                    "label": link.label,
+                    "country": link.country,
+                    "language": link.language,
+                })
+        return urls
+
+    def total_links(self) -> int:
+        """Get total number of links across all platforms."""
+        return sum(
+            len(getattr(self, platform, []))
+            for platform in ["amazon", "steam", "youtube", "reddit", "google", "trustpilot", "yelp"]
+        )
+
+
 # Nested configuration models
 class ScraperCommercialConfig(StudioBaseModel):
     """Commercial scraper configuration."""
@@ -134,6 +199,8 @@ class ProjectCreate(ProjectBase):
     """Model for creating a project."""
 
     preset: Literal["starter", "standard", "advanced", "budget", "custom"] = "standard"
+    product: ProductInfo | None = None
+    platform_links: PlatformLinks | None = None
     config: ProjectConfig | None = None
 
 
@@ -143,6 +210,8 @@ class ProjectUpdate(StudioBaseModel):
     name: str | None = Field(default=None, min_length=1, max_length=100)
     description: str | None = Field(default=None, max_length=500)
     status: Literal["active", "paused", "archived"] | None = None
+    product: ProductInfo | None = None
+    platform_links: PlatformLinks | None = None
     config: ProjectConfig | None = None
 
 
@@ -152,6 +221,8 @@ class Project(ProjectBase, MongoBaseModel, TimestampMixin):
     user_id: str
     status: Literal["active", "paused", "error", "archived"] = "active"
     preset: str = "standard"
+    product: ProductInfo | None = None
+    platform_links: PlatformLinks = Field(default_factory=PlatformLinks)
     config: ProjectConfig = Field(default_factory=ProjectConfig)
     stats: ProjectStats = Field(default_factory=ProjectStats)
     archived_at: datetime | None = None
@@ -160,6 +231,7 @@ class Project(ProjectBase, MongoBaseModel, TimestampMixin):
 class ProjectInDB(Project):
     """Project model with all database fields."""
 
+    # Product and platform_links are inherited from Project
     pass
 
 

@@ -8,7 +8,7 @@ from fastapi import Depends, HTTPException, status
 from motor.motor_asyncio import AsyncIOMotorDatabase
 
 from app.core.database import get_database
-from app.core.encryption import encrypt_api_key, decrypt_api_key, mask_api_key
+from app.core.encryption import encrypt_api_key, decrypt_api_key, mask_api_key, hash_api_key
 from app.models.llm_provider import (
     APIKey,
     APIKeyCreate,
@@ -21,8 +21,11 @@ from app.repositories.base import BaseRepository
 class APIKeyRepository(BaseRepository):
     """Repository for API key database operations."""
 
+    collection_name = "api_keys"
+    model_class = APIKey
+
     def __init__(self, db: AsyncIOMotorDatabase):
-        super().__init__(db, "api_keys")
+        super().__init__()
 
     async def create_api_key(
         self,
@@ -47,6 +50,7 @@ class APIKeyRepository(BaseRepository):
                 {
                     "$set": {
                         "encrypted_key": encrypted_key,
+                        "key_hash": hash_api_key(key_data.api_key),
                         "label": key_data.label,
                         "is_valid": None,  # Reset validation
                         "updated_at": now,
@@ -60,6 +64,7 @@ class APIKeyRepository(BaseRepository):
                 "user_id": user_id,
                 "provider": key_data.provider,
                 "encrypted_key": encrypted_key,
+                "key_hash": hash_api_key(key_data.api_key),
                 "label": key_data.label,
                 "is_valid": None,
                 "last_used": None,

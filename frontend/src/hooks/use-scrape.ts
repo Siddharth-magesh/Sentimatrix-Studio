@@ -18,7 +18,7 @@ export function useScrapeJobs(projectId: string) {
   return useQuery({
     queryKey: scrapeKeys.jobs(projectId),
     queryFn: () => api.getScrapeJobs(projectId),
-    enabled: !!projectId,
+    enabled: !!projectId && projectId !== 'undefined',
   });
 }
 
@@ -27,7 +27,7 @@ export function useScrapeJob(projectId: string, jobId: string) {
   return useQuery({
     queryKey: scrapeKeys.job(projectId, jobId),
     queryFn: () => api.getScrapeJob(projectId, jobId),
-    enabled: !!projectId && !!jobId,
+    enabled: !!projectId && !!jobId && projectId !== 'undefined' && jobId !== 'undefined',
     refetchInterval: (query) => {
       // Refetch every 2 seconds if job is running
       const data = query.state.data;
@@ -39,7 +39,7 @@ export function useScrapeJob(projectId: string, jobId: string) {
 // Start scrape job
 export function useStartScrape() {
   const queryClient = useQueryClient();
-  const { toast } = useToast();
+  const toast = useToast();
 
   return useMutation({
     mutationFn: (projectId: string) => api.startScrape(projectId),
@@ -57,7 +57,7 @@ export function useStartScrape() {
 // Cancel scrape job
 export function useCancelScrape() {
   const queryClient = useQueryClient();
-  const { toast } = useToast();
+  const toast = useToast();
 
   return useMutation({
     mutationFn: ({ projectId, jobId }: { projectId: string; jobId: string }) =>
