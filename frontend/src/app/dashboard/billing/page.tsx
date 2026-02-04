@@ -470,7 +470,7 @@ export default function BillingPage() {
 
       {/* Cancel Subscription Modal */}
       <Modal
-        open={showCancelModal}
+        isOpen={showCancelModal}
         onClose={() => setShowCancelModal(false)}
         title="Cancel Subscription"
       >

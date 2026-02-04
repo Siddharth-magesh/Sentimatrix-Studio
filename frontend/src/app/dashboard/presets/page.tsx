@@ -101,13 +101,13 @@ export default function PresetsPage() {
         name: preset.name,
         description: preset.description || '',
         is_default: preset.is_default,
-        scraper_provider: preset.config.scraper.provider,
-        llm_provider: preset.config.llm.provider,
-        llm_model: preset.config.llm.model,
-        analysis_sentiment: preset.config.analysis?.sentiment ?? true,
-        analysis_emotions: preset.config.analysis?.emotions ?? false,
-        analysis_keywords: preset.config.analysis?.keywords ?? false,
-        analysis_summary: preset.config.analysis?.summary ?? false,
+        scraper_provider: preset.config?.scraper?.provider || '',
+        llm_provider: preset.config?.llm?.provider || '',
+        llm_model: preset.config?.llm?.model || '',
+        analysis_sentiment: preset.config?.analysis?.sentiment ?? true,
+        analysis_emotions: preset.config?.analysis?.emotions ?? false,
+        analysis_keywords: preset.config?.analysis?.keywords ?? false,
+        analysis_summary: preset.config?.analysis?.summary ?? false,
       });
     } else {
       setEditId(null);
@@ -175,13 +175,13 @@ export default function PresetsPage() {
       name: `${preset.name} (Copy)`,
       description: preset.description || '',
       is_default: false,
-      scraper_provider: preset.config.scraper.provider,
-      llm_provider: preset.config.llm.provider,
-      llm_model: preset.config.llm.model,
-      analysis_sentiment: preset.config.analysis?.sentiment ?? true,
-      analysis_emotions: preset.config.analysis?.emotions ?? false,
-      analysis_keywords: preset.config.analysis?.keywords ?? false,
-      analysis_summary: preset.config.analysis?.summary ?? false,
+      scraper_provider: preset.config?.scraper?.provider || '',
+      llm_provider: preset.config?.llm?.provider || '',
+      llm_model: preset.config?.llm?.model || '',
+      analysis_sentiment: preset.config?.analysis?.sentiment ?? true,
+      analysis_emotions: preset.config?.analysis?.emotions ?? false,
+      analysis_keywords: preset.config?.analysis?.keywords ?? false,
+      analysis_summary: preset.config?.analysis?.summary ?? false,
     });
     setEditId(null);
     setShowModal(true);
@@ -254,26 +254,26 @@ export default function PresetsPage() {
                     </div>
                   </TableCell>
                   <TableCell>
-                    <Badge>{preset.config.scraper.provider}</Badge>
+                    <Badge>{preset.config?.scraper?.provider || 'N/A'}</Badge>
                   </TableCell>
                   <TableCell>
                     <div className="text-sm">
-                      <div className="font-medium">{preset.config.llm.provider}</div>
-                      <div className="text-neutral-500">{preset.config.llm.model}</div>
+                      <div className="font-medium">{preset.config?.llm?.provider || 'N/A'}</div>
+                      <div className="text-neutral-500">{preset.config?.llm?.model || 'N/A'}</div>
                     </div>
                   </TableCell>
                   <TableCell>
                     <div className="flex flex-wrap gap-1">
-                      {preset.config.analysis?.sentiment && (
+                      {preset.config?.analysis?.sentiment && (
                         <Badge variant="success" size="sm">Sentiment</Badge>
                       )}
-                      {preset.config.analysis?.emotions && (
+                      {preset.config?.analysis?.emotions && (
                         <Badge variant="warning" size="sm">Emotions</Badge>
                       )}
-                      {preset.config.analysis?.keywords && (
+                      {preset.config?.analysis?.keywords && (
                         <Badge variant="info" size="sm">Keywords</Badge>
                       )}
-                      {preset.config.analysis?.summary && (
+                      {preset.config?.analysis?.summary && (
                         <Badge variant="neutral" size="sm">Summary</Badge>
                       )}
                     </div>

@@ -22,8 +22,11 @@ from app.repositories.base import BaseRepository
 class WebhookRepository(BaseRepository):
     """Repository for webhook database operations."""
 
+    collection_name = "webhooks"
+    model_class = Webhook
+
     def __init__(self, db: AsyncIOMotorDatabase):
-        super().__init__(db, "webhooks")
+        super().__init__()
         self.deliveries_collection = db["webhook_deliveries"]
 
     async def create_webhook(

@@ -48,7 +48,7 @@ export function useProjectStats(id: string) {
 // Create project
 export function useCreateProject() {
   const queryClient = useQueryClient();
-  const { toast } = useToast();
+  const toast = useToast();
 
   return useMutation({
     mutationFn: (data: CreateProjectData) => api.createProject(data),
@@ -65,7 +65,7 @@ export function useCreateProject() {
 // Update project
 export function useUpdateProject() {
   const queryClient = useQueryClient();
-  const { toast } = useToast();
+  const toast = useToast();
 
   return useMutation({
     mutationFn: ({ id, data }: { id: string; data: Partial<CreateProjectData> }) =>
@@ -84,7 +84,7 @@ export function useUpdateProject() {
 // Delete project
 export function useDeleteProject() {
   const queryClient = useQueryClient();
-  const { toast } = useToast();
+  const toast = useToast();
 
   return useMutation({
     mutationFn: (id: string) => api.deleteProject(id),

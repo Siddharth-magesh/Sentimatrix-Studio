@@ -81,12 +81,14 @@ export default function NewProjectPage() {
   const selectedProvider = llmProviders?.find((p) => p.id === selectedLLMProvider);
 
   const onSubmit = async (data: ProjectFormData) => {
+    console.log('Form submitted with data:', data);
+    
     const targets = data.targets
       ?.split('\n')
       .map((url) => url.trim())
       .filter((url) => url.length > 0);
 
-    await createProject.mutateAsync({
+    const payload = {
       name: data.name,
       description: data.description,
       preset_id: data.preset_id,
@@ -105,9 +107,18 @@ export default function NewProjectPage() {
           summary: data.analysis_summary,
         },
       },
-    });
+    };
 
-    router.push('/dashboard/projects');
+    console.log('Sending payload:', payload);
+
+    try {
+      const result = await createProject.mutateAsync(payload);
+      console.log('Project created successfully:', result);
+      router.push('/dashboard/projects');
+    } catch (error) {
+      // Error is already handled by the mutation hook
+      console.error('Failed to create project:', error);
+    }
   };
 
   const nextStep = () => {
@@ -359,26 +370,44 @@ export default function NewProjectPage() {
             )}
 
             {/* Navigation */}
-            <div className="flex justify-between pt-4 border-t">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={prevStep}
-                disabled={currentStep === 0}
-              >
-                <ArrowLeft className="mr-2 h-4 w-4" />
-                Previous
-              </Button>
-              {currentStep < steps.length - 1 ? (
-                <Button type="button" onClick={nextStep}>
-                  Next
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
-              ) : (
-                <Button type="submit" isLoading={createProject.isPending}>
-                  Create Project
-                </Button>
+            <div className="space-y-4">
+              {/* Show validation errors */}
+              {Object.keys(errors).length > 0 && (
+                <Alert variant="error">
+                  <div className="space-y-1">
+                    <p className="font-medium">Please fix the following errors:</p>
+                    <ul className="list-disc list-inside text-sm">
+                      {Object.entries(errors).map(([field, error]) => (
+                        <li key={field}>
+                          {field}: {error?.message}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </Alert>
               )}
+              
+              <div className="flex justify-between pt-4 border-t">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={prevStep}
+                  disabled={currentStep === 0}
+                >
+                  <ArrowLeft className="mr-2 h-4 w-4" />
+                  Previous
+                </Button>
+                {currentStep < steps.length - 1 ? (
+                  <Button type="button" onClick={nextStep}>
+                    Next
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                ) : (
+                  <Button type="submit" isLoading={createProject.isPending}>
+                    Create Project
+                  </Button>
+                )}
+              </div>
             </div>
           </form>
         </CardContent>
